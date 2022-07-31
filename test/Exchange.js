@@ -73,6 +73,7 @@ describe('Exchange', () => {
       it('emits a deposit event', async () => {
         const event = result.events[1]
         expect(event.event).to.equal('Deposit')
+       
 
         const args = event.args
         expect(args.token).to.equal(token1.address)
