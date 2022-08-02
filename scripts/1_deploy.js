@@ -34,7 +34,7 @@ async function main() {
   await exchange.deployed()
   console.log(`exchange deployed to : ${exchange.address}`) */
 
-console.log(accounts[1])
+console.log(accounts[1].address)
 
 }
 
