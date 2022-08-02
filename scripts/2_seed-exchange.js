@@ -1,6 +1,7 @@
 
 const hre = require("hardhat");
 const { ethers } = require('hardhat');
+const config = require('../src/config.json')
 
 const tokens = (n) => {
   return ethers.utils.parseUnits(n.toString(), 'ether')
@@ -10,20 +11,24 @@ async function main() {
 
 const accounts = await ethers.getSigners()
 
+//get network ID
+const {chainId} = await ethers.provider.getNetwork()
+console.log("using chain ID " + chainId)
+
 //Fetch tokens 
 
-const DApp =  await ethers.getContractAt('Token', '0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1')
+const DApp =  await ethers.getContractAt('Token', config[chainId].DApp.address)
 console.log('DApp Token Fetched: ' + DApp.address)
 
 
-const mETH =  await ethers.getContractAt('Token', '0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE')
+const mETH =  await ethers.getContractAt('Token', config[chainId].mETH.address)
 console.log('mETH Token Fetched: ' + mETH.address)
 
 
-const mDAI =  await ethers.getContractAt('Token', '0x68B1D87F95878fE05B998F19b66F4baba5De1aed')
+const mDAI =  await ethers.getContractAt('Token', config[chainId].mDAI.address)
 console.log('mETH Token Fetched: ' + mDAI.address)
 
-const exchange =  await ethers.getContractAt('Exchange', '0x3Aa5ebB10DC797CAC828524e59A333d0A371443c')
+const exchange =  await ethers.getContractAt('Exchange', config[chainId].exchange.address)
 console.log('Exchange Fetched: ' + exchange.address)
 
 const sender = accounts[0]
@@ -64,7 +69,7 @@ amount = tokens(10000)
       result = await transaction.wait()
       console.log(user1.address + "made an order")
 
- 
+      
       transaction = await exchange.connect(user1).cancelOrder(result.events[0].args.id)
           result = await transaction.wait()
           console.log(user1.address + ' cancelled order')
@@ -91,6 +96,41 @@ amount = tokens(10000)
   result = await transaction.wait()
   console.log(user2.address + "filled order")
 
+
+
+  //user 1 makes order
+      transaction = await exchange.connect(user1).makeOrder(mETH.address, tokens(50), DApp.address, tokens(50))
+      result = await transaction.wait()
+      console.log(user1.address + " made an order")
+
+  //user 2 fills order
+  transaction = await exchange.connect(user2).fillOrder(result.events[0].args.id)
+  result = await transaction.wait()
+  console.log(user2.address + "filled order")
+
+
+  // Seed open orders 
+
+  //user 1 makes 10 orders 
+
+  for(let i = 0; i <= 10; i++ ) {
+
+    transaction = await exchange.connect(user1).makeOrder(mETH.address, tokens(i*10), DApp.address, tokens(i*5))
+      result = await transaction.wait()
+      console.log(user1.address + " made an order")
+
+
+  }
+//user 2 makes 10 orders 
+
+  for(let i = 0; i <= 10; i++ ) {
+
+    transaction = await exchange.connect(user2).makeOrder(mDAI.address, tokens(i*5), mETH.address, tokens(i*10))
+      result = await transaction.wait()
+      console.log(user2.address + " made an order")
+
+
+  }
 
 }
 
