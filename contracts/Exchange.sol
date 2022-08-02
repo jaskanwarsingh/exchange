@@ -11,6 +11,7 @@ contract Exchange {
 	mapping (address => mapping(address => uint256)) public tokens;
 	mapping (uint256 => _Order) public orders;
 	mapping (uint256 => bool) public orderCancelled;
+	mapping (uint256 => bool) public orderFilled;
 
 	event Deposit(address token, address user, uint256 amount, uint256 balance);
 
@@ -33,6 +34,17 @@ contract Exchange {
 		uint256 amountGet,
 		address tokenGive, 
 		uint256 amountGive,
+		uint256 timeStamp
+		);
+
+	event Trade(
+		uint256 id,
+		address user,
+		address tokenGet, 
+		uint256 amountGet,
+		address tokenGive, 
+		uint256 amountGive,
+		address creator,
 		uint256 timeStamp
 		);
 
@@ -104,7 +116,7 @@ contract Exchange {
 		) public {
 
 		require(balanceOf(_tokenGive, msg.sender) >= _amountGive);
-		orderCount += 1;
+		orderCount = orderCount + 1;
 
 		orders[orderCount] = _Order(
 			orderCount, 
@@ -138,6 +150,9 @@ contract Exchange {
 		//requireorder to be actually users
 		require(_order.user == msg.sender);
 
+		//order should not be already filled 
+		require(!orderFilled[_id]);
+
 		//cancel the order
 		orderCancelled[_id] = true;
 		//emit event
@@ -154,4 +169,106 @@ contract Exchange {
 
 
 	}
+
+	function fillOrder(uint256 _id) public {
+		
+		//must be valid id
+		require(_id < orderCount && _id >0, "Order does not exist");
+
+		//Fetch the order 
+		_Order storage _order = orders[_id];
+
+		//make sure user 2 has enough tokens
+		require(balanceOf(_order._tokenGet, msg.sender) >= ((_order._amountGet)*feePercent)/100); 
+
+		//make sure order isnt cancelled 
+		require(!orderCancelled[_order.id]);
+
+		//make sure order isnt filled 
+		require(!orderFilled[_order.id]);
+
+		//swap tokens 
+
+		_trade(_order.id, _order.user,_order._tokenGet,_order._amountGet,_order._tokenGive,_order._amountGive);
+
+		orderFilled[_order.id] = true;
+
+
+	}
+
+	function _trade(
+		uint256 _orderId, 
+		address _user,
+		address _tokenGet, 
+		uint256 _amountGet, 
+		address _tokenGive, 
+		uint256 _amountGive
+		) internal {
+
+		//calculate fee and deduct
+
+		uint256 _feeAmount = (_amountGet * feePercent)/100;
+
+
+
+		tokens[_tokenGive][_user] -= _amountGive; // subtract token give from maker 
+		tokens[_tokenGet][_user] += _amountGet; //add token get to maker 
+
+		tokens[_tokenGet][msg.sender] -= (_amountGet + _feeAmount); // subtract token from taker + fees
+		tokens[_tokenGive][msg.sender] += _amountGive; //add token to taker
+
+		tokens[_tokenGet][feeAccount] += _feeAmount; // send fees to fee account 
+
+		emit Trade(
+			_orderId,
+			msg.sender,
+			_tokenGet,
+			_amountGet,
+			_tokenGive,
+			_amountGive,
+			_user,
+			block.timestamp
+
+			);
+
+
+		
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
