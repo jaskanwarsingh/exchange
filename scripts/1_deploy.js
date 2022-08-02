@@ -23,12 +23,12 @@ async function main() {
    const mETH = await Token.deploy('Mock ETH', 'mETH', '1000000')
   await mETH.deployed()
 
-  console.log(`dapp Token deployed to : ${mETH.address}`)
+  console.log(`mETH Token deployed to : ${mETH.address}`)
 
    const mDAI = await Token.deploy('mock DAI', 'mDAI', '1000000')
   await mDAI.deployed()
 
-  console.log(`dapp Token deployed to : ${mDAI.address}`)
+  console.log(`mDAI Token deployed to : ${mDAI.address}`)
 
   const exchange = await Exchange.deploy(accounts[1].address, 10)
   await exchange.deployed()
