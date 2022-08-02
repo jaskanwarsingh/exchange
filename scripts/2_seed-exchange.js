@@ -71,7 +71,7 @@ amount = tokens(10000)
 
 
   //user 1 makes order
-  transaction = await exchange.connect(user1).makeOrder(mETH.address, tokens(50), DApp.address, token(50))
+  transaction = await exchange.connect(user1).makeOrder(mETH.address, tokens(50), DApp.address, tokens(50))
       result = await transaction.wait()
       console.log(user1.address + "made an order")
 
@@ -82,7 +82,7 @@ amount = tokens(10000)
 
 
   //user 1 makes order
-  transaction = await exchange.connect(user1).makeOrder(mETH.address, tokens(50), DApp.address, token(50))
+  transaction = await exchange.connect(user1).makeOrder(mETH.address, tokens(50), DApp.address, tokens(50))
       result = await transaction.wait()
       console.log(user1.address + "made an order")
 
