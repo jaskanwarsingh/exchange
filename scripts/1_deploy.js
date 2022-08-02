@@ -30,11 +30,11 @@ async function main() {
 
   console.log(`dapp Token deployed to : ${mDAI.address}`)
 
-  const exchange = await Exchange.deploy(accounts[1], 10)
+/*  const exchange = await Exchange.deploy(accounts[1], 10)
   await exchange.deployed()
-  console.log(`exchange deployed to : ${exchange.address}`) 
+  console.log(`exchange deployed to : ${exchange.address}`) */
 
-
+console.log(accounts[1])
 
 }
 
