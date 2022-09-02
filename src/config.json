@@ -30,5 +30,23 @@
     },
 
     "explorerURL": "https://kovan.etherscan.io/"
+  },
+  "4": {
+
+    "exchange": {
+      "address": "0x2760e1B31177ad8234FFBCF05d9e9c800f5296B4"
+    },
+    "DApp": {
+      "address": "0x235dD7a4C45e5A208Aca6f610C59deE123b89C0B"
+    },
+    "mETH": {
+      "address": "0x00D864D625e0BF68C34A8F10Eff6aFFfc8B95F9c"
+    },
+    "mDAI": {
+      "address": "0xcf2beFbdffD6Fb05D89b7c63a0d348C1E60643bF"
+    },
+
+    "explorerURL": "https://rinkeby.etherscan.io/"
   }
+
 }
